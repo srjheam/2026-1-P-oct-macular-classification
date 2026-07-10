@@ -181,6 +181,8 @@ def run_epoch(
 ) -> tuple[float, np.ndarray, np.ndarray]:
     training = optimizer is not None
     model.train(training)
+    if training and getattr(model, "backbone_frozen", False):
+        model.features.eval()
     losses = []
     predictions = []
     targets = []
@@ -266,13 +268,17 @@ def train_cnn(config: dict, df: pd.DataFrame, run_dir: Path, class_names: list[s
         model_name,
         num_classes=len(class_names),
         pretrained=bool(config.get("model", {}).get("pretrained", False)),
+        freeze_backbone=bool(config.get("model", {}).get("freeze_backbone", False)),
     ).to(device)
 
     class_weight_tensor = None
     if imbalance_enabled and strategy in {"class_weighted_loss", "both"}:
         class_weight_tensor = make_class_weights(train_rows, class_names).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weight_tensor)
-    optimizer = torch.optim.Adam(model.parameters(), lr=float(training_config.get("learning_rate", 0.001)))
+    trainable_parameters = [parameter for parameter in model.parameters() if parameter.requires_grad]
+    if not trainable_parameters:
+        raise ValueError("Model has no trainable parameters.")
+    optimizer = torch.optim.Adam(trainable_parameters, lr=float(training_config.get("learning_rate", 0.001)))
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.2, patience=2)
 
     best_val_loss = float("inf")
@@ -365,4 +371,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

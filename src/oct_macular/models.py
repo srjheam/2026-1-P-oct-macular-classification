@@ -81,7 +81,12 @@ def build_transforms(image_size: int, train: bool, imagenet_norm: bool = True):
     return transforms.Compose(steps)
 
 
-def build_model(model_name: str, num_classes: int, pretrained: bool = False) -> nn.Module:
+def build_model(
+    model_name: str,
+    num_classes: int,
+    pretrained: bool = False,
+    freeze_backbone: bool = False,
+) -> nn.Module:
     if model_name == "simple_cnn":
         return SimpleCNN(num_classes)
     if model_name == "mobilenetv3_small":
@@ -89,6 +94,11 @@ def build_model(model_name: str, num_classes: int, pretrained: bool = False) -> 
         model = models.mobilenet_v3_small(weights=weights)
         in_features = model.classifier[-1].in_features
         model.classifier[-1] = nn.Linear(in_features, num_classes)
+        if freeze_backbone:
+            for parameter in model.features.parameters():
+                parameter.requires_grad = False
+            model.features.eval()
+        model.backbone_frozen = freeze_backbone
         return model
     raise ValueError(f"Unknown model: {model_name}")
 
@@ -101,9 +111,9 @@ def load_checkpoint_model(checkpoint_path: str | Path, device: torch.device) -> 
         config["model"]["name"],
         num_classes=len(class_names),
         pretrained=False,
+        freeze_backbone=bool(config.get("model", {}).get("freeze_backbone", False)),
     )
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(device)
     model.eval()
     return model, class_names
-

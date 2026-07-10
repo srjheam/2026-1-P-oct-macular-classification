@@ -10,6 +10,7 @@ data:
 model:
   name: mobilenetv3_small
   pretrained: true
+  freeze_backbone: true
 
 training:
   batch_size: 32
@@ -24,4 +25,3 @@ imbalance:
 
 output:
   dir: outputs
-
