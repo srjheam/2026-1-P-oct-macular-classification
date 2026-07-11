@@ -29,11 +29,16 @@ D.~S. Kermany, M.~Goldbaum, W.~Cai \emph{et~al.}, ``Identifying medical diagnose
 \bibitem{huang1991}
 D.~Huang, E.~A. Swanson, C.~P. Lin, J.~S. Schuman, W.~G. Stinson, W.~Chang, M.~R. Hee, T.~Flotte, K.~Gregory, C.~A. Puliafito, and J.~G. Fujimoto, ``Optical coherence tomography,'' \emph{Science}, vol. 254, no. 5035, pp. 1178--1181, 1991.
 
+\bibitem{bouma2022}
+B.~E. Bouma, J.~F. de~Boer, D.~Huang \emph{et~al.}, ``Optical coherence tomography,'' \emph{Nature Reviews Methods Primers}, vol.~2, p.~79, 2022.
+
 \bibitem{kermany_dataset}
 D.~Kermany, K.~Zhang, and M.~Goldbaum, ``Large dataset of labeled optical coherence tomography ({OCT}) and chest {X}-ray images,'' Mendeley Data, version 3, 2018, licença CC BY 4.0.
 
 \bibitem{ibge2021}
-{Instituto Brasileiro de Geografia e Estatística}, ``{PNS} 2019: país tem 17,3 milhões de pessoas com algum tipo de deficiência,'' Agência de Notícias IBGE. Disponível em: \href{https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/31445-pns-2019-pais-tem-17-3-milhoes-de-pessoas-com-algum-tipo-de-deficiencia}{agenciadenoticias.ibge.gov.br}, 2021, acesso em: 10 jul. 2026.
+\BIBentryALTinterwordspacing
+{Instituto Brasileiro de Geografia e Estatística}, \emph{Pesquisa Nacional de Saúde: 2019: ciclos de vida: Brasil}.\hskip 1em plus 0.5em minus 0.4em\relax Rio de Janeiro, Brasil: IBGE, 2021, acesso em: 11 jul. 2026. [Online]. Available: \url{https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv101846.pdf}
+\BIBentrySTDinterwordspacing
 
 \bibitem{salomao2008}
 S.~R. Salomão, R.~W. Cinoto, A.~Berezovsky, A.~Araújo-Filho, M.~R. K.~H. Mitsuhiro, L.~Mendieta, P.~H.~A. Morales, G.~P. Pokharel, R.~{Belfort Jr.}, and L.~B. Ellwein, ``Prevalence and causes of vision impairment and blindness in older adults in {Brazil}: the {São Paulo Eye Study},'' \emph{Ophthalmic Epidemiology}, vol.~15, no.~3, pp. 167--175, 2008.

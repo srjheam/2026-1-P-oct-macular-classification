@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex conference_101719"] 1783746176.10214 "conference_101719.aux" "conference_101719.bbl" "conference_101719" 1783746176.58584 0
-  "./references.bib" 1783746175.82848 5475 374f356545f42ea2666a00ee2f858b9d ""
+["bibtex conference_101719"] 1783786515.43332 "conference_101719.aux" "conference_101719.bbl" "conference_101719" 1783786940.25501 0
+  "./references.bib" 1783779396.17613 5639 7dfdaa7cf58fd9e64874f726195a85b2 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "conference_101719.aux" 1783746176.50445 3020 1bb94c4e88970e75b520516ef929d4e7 "pdflatex"
+  "conference_101719.aux" 1783786940.16341 3106 4369838f36602fad42bcdacd7d8a870c "pdflatex"
   (generated)
   "conference_101719.bbl"
   "conference_101719.blg"
   (rewritten before read)
-["pdflatex"] 1783746176.12979 "/home/srjheam/projects/2026-1-P-projeto/article/conference_101719.tex" "conference_101719.pdf" "conference_101719" 1783746176.58602 0
+["pdflatex"] 1783786939.72279 "/home/srjheam/projects/2026-1-P-projeto/article/conference_101719.tex" "conference_101719.pdf" "conference_101719" 1783786940.2552 0
   "/etc/texmf/web2c/texmf.cnf" 1782696397.02282 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/srjheam/projects/2026-1-P-projeto/article/conference_101719.tex" 1783746115.76207 13389 c310ec035810a440890bced6dfb53fc2 ""
+  "/home/srjheam/projects/2026-1-P-projeto/article/conference_101719.tex" 1783786939.45846 13936 78aeac14bbc339e82b9c18c8387dc753 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/courier/pcrr8r.tfm" 1136768653 1292 bd42be2f344128bff6d35d98474adfe3 ""
@@ -98,10 +98,10 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1782696408.03234 165012 f177baa1c39a3ebd62c3096a43521a0d ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782747272 6831848 dca9d022c903e7f585d261821260c9e6 ""
   "IEEEtran.cls" 1783561360 281957 5b2e4fa15b0f7eabb840ebf67df4c0f7 ""
-  "conference_101719.aux" 1783746176.50445 3020 1bb94c4e88970e75b520516ef929d4e7 "pdflatex"
-  "conference_101719.bbl" 1783746176.1205 4627 3dce00efafcabfc49b4bcd4245c6a9a4 "bibtex conference_101719"
-  "conference_101719.out" 1783746176.5058 451 6b023d7770c1e0882a5c92e75a94bd0b "pdflatex"
-  "conference_101719.tex" 1783746115.76207 13389 c310ec035810a440890bced6dfb53fc2 ""
+  "conference_101719.aux" 1783786940.16341 3106 4369838f36602fad42bcdacd7d8a870c "pdflatex"
+  "conference_101719.bbl" 1783786515.45685 4742 a3ae7f974fef4660769f1d8876439037 "bibtex conference_101719"
+  "conference_101719.out" 1783786940.16572 451 6b023d7770c1e0882a5c92e75a94bd0b "pdflatex"
+  "conference_101719.tex" 1783786939.45846 13936 78aeac14bbc339e82b9c18c8387dc753 ""
   "figures/CNV-1676918-1.jpeg" 1783731343.13778 120309 10e1c417bd759cf28d1d69c3c082146c ""
   "figures/DME-1083927-1.jpeg" 1783727160.44723 160275 e7820dc691570c969dab38c8c00a98f5 ""
   "figures/DRUSEN-3424668-17.jpeg" 1783727160.39967 164901 c632b605c3dc5882a3c24bfb825df31c ""
