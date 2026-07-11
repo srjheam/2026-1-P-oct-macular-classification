@@ -14,7 +14,7 @@
 
 \title{Classificação de Condições Maculares em Tomografia de Coerência Óptica com Descritores HOG e uma Rede Convolucional Compacta}
 
-\author{\IEEEauthorblockN{Jheam Storch Ross, Gabriel Zuany Duarte Vargas e Felipe Mattos}
+\author{\IEEEauthorblockN{Jheam Storch Ross, Felipe Mattos Vanetti de Albuquerque e Gabriel Zuany Duarte Vargas}
 \IEEEauthorblockA{\textit{Departamento de Informática} \\
 \textit{Universidade Federal do Espírito Santo}\\
 Vitória, Brasil}}
@@ -54,6 +54,7 @@ O componente diabético também representa uma população de risco expressiva. 
 
 Como um exame pode conter diversos B-scans, a análise manual demanda tempo especializado. Sistemas automáticos podem apoiar a triagem e a priorização de exames para revisão especializada~\cite{kermany2018,defauw2018}. Essa função deve ser entendida como suporte à decisão: uma imagem isolada não contém histórico clínico, exame físico, informações sobre tratamento ou todas as aquisições do volume. Além disso, um modelo treinado nessa base multicêntrica internacional não está validado para uso clínico na população brasileira.
 
+% TODO (REVISÃO): a explicação sobre os dados e a separação por paciente foi duplicada na Seção de metodologia. Cabe refletir em qual ponto do texto ela deve permanecer.
 Nesse contexto, o objetivo do projeto é investigar se uma rede neural convolucional compacta, treinada do zero, consegue aprender representações úteis das quatro classes e superar uma referência clássica baseada em descritores de histogramas de gradientes orientados (HOG, do inglês \textit{histograms of oriented gradients}) e regressão logística. A comparação privilegia um protocolo reproduzível, com separação por paciente e relato conjunto de desempenho global e por classe. Foi utilizada a versão 3 do subconjunto OCT de Kermany et al.~\cite{kermany_dataset}, preservando-se o conjunto de teste oficial. A validação foi amostrada somente do conjunto de treino, em proporção de 15\%, por agrupamento dos identificadores de paciente extraídos de nomes no padrão Kermany, como \texttt{CNV-1016042-1.jpeg}. O manifesto final foi validado para garantir interseções vazias dos conjuntos de identificadores de paciente entre treino, validação e teste. O resultado pretendido é uma análise experimental de métodos de classificação, e não um dispositivo diagnóstico.
 
 \section{Trabalhos Relacionados}
@@ -93,7 +94,103 @@ Tampu et al.~\cite{tampu2022} & LightOCT sob diferentes estratégias de particio
 
 Em conjunto, a literatura indica que arquiteturas compactas podem ser competitivas, mas não demonstra que transferência de aprendizado seja desnecessária em geral. Profundidade, número de parâmetros, versão da base, unidade de avaliação e estratégia de particionamento variam simultaneamente. Isso motiva a comparação controlada entre HOG e uma CNN compacta sob o mesmo manifesto com teste oficial preservado e separação validada por paciente, mantendo os experimentos exploratórios com transferência apenas como evidência secundária.
 
-% TODO: inserir Metodologia, Resultados e Discussão, Conclusão e Agradecimentos.
+\section{Metodologia}
+\label{sec:metodologia}
+
+Esta seção descreve o protocolo experimental adotado na comparação entre os dois modelos. Inicialmente, apresentam-se o conjunto de dados e a divisão por paciente (Seção~\ref{subsec:dados}). Em seguida, descrevem-se os modelos comparados: a regressão logística sobre descritores HOG (Seção~\ref{subsec:hog_logreg}) e a rede convolucional compacta treinada do zero (Seção~\ref{subsec:cnn}). Por fim, detalham-se as estratégias que compõem o treino, comuns a ambos os modelos ou específicas da rede convolucional, a saber, o aumento de dados (Seção~\ref{subsec:aumento}), o tratamento do desbalanceamento de classes (Seção~\ref{subsec:desbalanceamento}) e a configuração de otimização (Seção~\ref{subsec:treino}), além das métricas de avaliação (Seção~\ref{subsec:metricas}).
+
+\subsection{Dados}
+\label{subsec:dados}
+
+Foi utilizada a versão~3 do subconjunto OCT do conjunto de Kermany et al.~\cite{kermany_dataset}, formado por B-scans maculares em tons de cinza organizados nas quatro classes já apresentadas. O pacote é distribuído com uma divisão oficial entre treino e teste, sendo o teste composto por 1.000 imagens balanceadas, 250 por classe. Após a leitura das imagens e a remoção de duplicatas, o manifesto reúne 109.309 B-scans; a porção de radiografias de tórax incluída no pacote original não faz parte do escopo deste trabalho.
+
+O conjunto de teste oficial foi preservado integralmente, sem qualquer reamostragem, para permitir comparação direta com os resultados relatados na literatura sobre a mesma partição. O conjunto de validação foi amostrado exclusivamente do treino, na proporção de 15\%, por agrupamento dos identificadores de paciente inferidos dos nomes de arquivo no padrão Kermany, como \texttt{CNV-1016042-1.jpeg}. O agrupamento mantém todas as imagens de um mesmo paciente em um único conjunto, e o manifesto foi verificado para garantir interseção vazia de identificadores entre treino, validação e teste. Essa separação é essencial, pois dividir B-scans sem respeitar o paciente infla artificialmente o desempenho; a versão~3 é adequada a esse protocolo por não apresentar sobreposição de identificadores entre treino e teste~\cite{tampu2022}.
+
+A Tabela~\ref{tab:dataset} detalha a distribuição por classe e conjunto. No treino, as classes são acentuadamente desbalanceadas: a retina normal e a CNV concentram a maior parte das amostras, enquanto drusas e DME são minoritárias. Esse desequilíbrio motiva o tratamento descrito na Seção~\ref{subsec:desbalanceamento}. O teste oficial, ao contrário, é balanceado, com 250 imagens por classe, o que favorece a leitura das métricas globais discutidas na Seção~\ref{subsec:metricas}.
+
+\begin{table}[t]
+\caption{Distribuição de B-scans por classe e conjunto no manifesto da versão~3 do subconjunto OCT.}
+\label{tab:dataset}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l r r r r}
+\toprule
+\textbf{Classe} & \textbf{Treino} & \textbf{Validação} & \textbf{Teste} & \textbf{Total} \\
+\midrule
+CNV       & 32.014 &  5.191 &   250 & 37.455 \\
+DME       &  9.858 &  1.490 &   250 & 11.598 \\
+Drusas    &  7.408 &  1.208 &   250 &  8.866 \\
+Normal    & 43.907 &  7.233 &   250 & 51.390 \\
+\midrule
+Imagens   & 93.187 & 15.122 & 1.000 & 109.309 \\
+Pacientes &  4.067 &    718 &   635 &  5.420 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Regressão logística com HOG}
+\label{subsec:hog_logreg}
+
+A abordagem clássica combina descritores HOG com um classificador linear. Cada B-scan é convertido para tons de cinza, redimensionado para $224\times224$ e descrito por HOG com 9 orientações, células de $16\times16$ pixels e blocos de $2\times2$ células. O descritor resume a distribuição local de orientações de gradiente, sensível aos contornos das camadas retinianas alteradas pelas condições estudadas. O vetor resultante é padronizado e classificado por regressão logística multinomial (solucionador \textit{lbfgs}, limitado por 2.000 iterações), com o desbalanceamento tratado por ponderação de classes (Seção~\ref{subsec:desbalanceamento}).
+
+\subsection{Rede Convolucional Compacta}
+\label{subsec:cnn}
+
+A rede convolucional compacta é treinada do zero e aprende representações hierárquicas diretamente dos B-scans, sem transferência de aprendizado. A Tabela~\ref{tab:cnn} apresenta sua arquitetura. As imagens, em tons de cinza, são representadas em três canais e redimensionadas para $224\times224$. O extrator de características é formado por três blocos convolucionais, cada um com convolução $3\times3$, normalização em lote, ativação ReLU e \textit{max-pooling} $2\times2$. A normalização em lote estabiliza o treino e a redução progressiva concentra a informação em mapas de características mais abstratos.
+
+Em vez de camadas densas de grande porte, um \textit{pooling} médio global condensa cada mapa de características em um único valor, o que reduz de forma acentuada o número de parâmetros e a propensão ao sobreajuste. O vetor de 128 dimensões passa por \textit{dropout} ($p=0{,}25$) e por uma camada linear com \textit{softmax} sobre as quatro classes. O modelo totaliza cerca de 94~mil parâmetros, significativamente menor que a Inception~V3 adotada por Kermany et al.~\cite{kermany2018}, a qual possui aproximadamente 23~milhões. As estratégias de aumento de dados e de tratamento do desbalanceamento aplicadas a essa rede são descritas nas Seções~\ref{subsec:aumento} e~\ref{subsec:desbalanceamento}.
+
+\begin{table}[t]
+\caption{Arquitetura da rede convolucional compacta.}
+\label{tab:cnn}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l l l}
+\toprule
+\textbf{Camada} & \textbf{Configuração} & \textbf{Saída} \\
+\midrule
+Entrada & --- & $3\times224\times224$ \\
+Conv+BN+ReLU & 32 filtros $3\times3$ & $32\times224\times224$ \\
+\textit{MaxPool} & $2\times2$ & $32\times112\times112$ \\
+Conv+BN+ReLU & 64 filtros $3\times3$ & $64\times112\times112$ \\
+\textit{MaxPool} & $2\times2$ & $64\times56\times56$ \\
+Conv+BN+ReLU & 128 filtros $3\times3$ & $128\times56\times56$ \\
+\textit{MaxPool} & $2\times2$ & $128\times28\times28$ \\
+\textit{Pooling} médio global & --- & $128$ \\
+\textit{Dropout} & $p=0{,}25$ & $128$ \\
+Linear + \textit{softmax} & $128 \to 4$ & $4$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Aumento de dados}
+\label{subsec:aumento}
+
+O aumento de dados é aplicado apenas ao conjunto de treino da rede convolucional; validação e teste não são alterados. Foram utilizadas duas transformações condizentes com a natureza dos B-scans: espelhamento horizontal ($p=0{,}5$), que corresponde à simetria entre os lados nasal e temporal e à alternância entre olho direito e esquerdo, e rotação aleatória de até $5^\circ$, compatível com pequenas angulações no posicionamento do aparelho durante a aquisição. Ambas preservam a ordenação anatômica das camadas retinianas. Transformações que violariam essa ordenação foram evitadas: o espelhamento vertical, por exemplo, inverteria a sequência das camadas, colocando a coroide acima do vítreo e produzindo uma imagem sem correspondência clínica.
+
+\subsection{Desbalanceamento de classes}
+\label{subsec:desbalanceamento}
+
+Como mostra a Tabela~\ref{tab:dataset}, o treino é desbalanceado, com razão de cerca de seis para um entre a classe mais e a menos frequente. Para evitar que as classes majoritárias dominem o aprendizado, ambos os modelos atribuem a cada classe uma importância inversamente proporcional à sua frequência, mas a aplicam de formas distintas. Na regressão logística, essa importância entra na função de perda, fazendo com que erros em classes raras pesem mais no ajuste. Na rede convolucional, ela guia a amostragem: um amostrador aleatório ponderado sorteia as imagens de cada época com reposição, exibindo com mais frequência as classes minoritárias e tornando os \textit{mini-batches} aproximadamente balanceados. Como essa reamostragem repete imagens minoritárias, é o aumento de dados (Seção~\ref{subsec:aumento}) que introduz variação entre as repetições.
+
+\subsection{Treinamento}
+\label{subsec:treino}
+
+Os modelos foram implementados em PyTorch, com semente aleatória fixa em 42 para favorecer a reprodutibilidade. A regressão logística é ajustada em etapa única sobre os descritores HOG; o restante desta seção detalha o treino da rede convolucional. Antes de entrar na rede, cada imagem é redimensionada para $224\times224$ e normalizada com média e desvio-padrão de $0{,}5$ por canal. A rede é otimizada com Adam, taxa de aprendizado inicial de $10^{-3}$, minimizando a entropia cruzada em lotes de 32 imagens por até 50 épocas.
+
+A taxa de aprendizado é reduzida por um fator de $0{,}2$ quando a perda de validação não melhora por duas épocas consecutivas. O treino é interrompido antecipadamente após cinco épocas sem melhora dessa perda, e o modelo correspondente à menor perda de validação é retido para avaliação no conjunto de teste oficial.
+
+\subsection{Métricas de avaliação}
+\label{subsec:metricas}
+
+% TODO: Apresentar as métricas reportadas na próxima seção
+placeholder
+
+% TODO: inserir Resultados e Discussão, Conclusão e Agradecimentos.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
