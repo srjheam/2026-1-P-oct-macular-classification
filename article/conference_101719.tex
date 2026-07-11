@@ -1,288 +1,101 @@
 \documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
-% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
 \usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
 \usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
 \begin{document}
 
-\title{Conference Paper Title*\\
-{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-should not be used}
-\thanks{Identify applicable funding agency here. If none, delete this.}
-}
+\title{Classificação de Condições Maculares em Tomografia de Coerência Óptica com Descritores HOG e uma Rede Convolucional Compacta}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-}
+\author{\IEEEauthorblockN{Jheam Storch Ross, Gabriel Zuany Duarte Vargas e Felipe Mattos}
+\IEEEauthorblockA{\textit{Departamento de Informática} \\
+\textit{Universidade Federal do Espírito Santo}\\
+Vitória, Brasil}}
 
 \maketitle
 
-\begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
-\end{abstract}
+% TODO: redigir resumo e palavras-chave após consolidar os resultados.
 
-\begin{IEEEkeywords}
-component, formatting, style, styling, insert
-\end{IEEEkeywords}
+\section{Introdução}
 
-\section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. 
+A mácula é a região central da retina responsável pela visão de detalhes. Alterações em sua estrutura podem comprometer de forma importante a visão central, mesmo quando a visão periférica permanece preservada. Este trabalho considera as quatro classes definidas no conjunto de dados de Kermany et al.~\cite{kermany2018}: neovascularização coroideana (CNV, do inglês \textit{choroidal neovascularization}), edema macular diabético (DME, do inglês \textit{diabetic macular edema}), drusas e retina normal. Elas não correspondem a quatro doenças: CNV é um processo patológico, drusas são achados anatômicos e a classe normal é uma referência. No contexto da base, a CNV é usada como representação da forma neovascular avançada da degeneração macular relacionada à idade (DMRI), caracterizada por membrana neovascular e possível fluido sub-retiniano. O DME decorre da retinopatia diabética e apresenta espessamento da retina associado ao acúmulo de fluido intrarretiniano. Drusas são depósitos lipídicos associados à forma seca ou inicial da DMRI. A classe normal apresenta contorno foveal preservado e ausência de edema ou fluido retiniano~\cite{kermany2018,conitec2021}.
 
-\section{Ease of Use}
+A tomografia de coerência óptica (OCT, do inglês \textit{optical coherence tomography}) é uma modalidade não invasiva e sem contato que emprega interferometria de baixa coerência para obter cortes ópticos de alta resolução dos tecidos~\cite{huang1991,bouma2022}. Durante o exame, o paciente mantém a fixação enquanto o equipamento realiza uma varredura luminosa da retina. Cada corte transversal é denominado B-scan, e uma sequência desses cortes pode compor uma representação volumétrica~\cite{bouma2022}. Em complemento ao exame clínico e à fotografia colorida de fundo de olho, a OCT permite observar separadamente as camadas retinianas e evidenciar fluido intrarretiniano ou sub-retiniano, que pode não ser claramente visível nessas outras modalidades~\cite{kermany2018}. Por isso, a OCT orienta a avaliação, o encaminhamento e o acompanhamento da resposta ao tratamento com agentes anti-VEGF (do inglês \textit{anti-vascular endothelial growth factor}).
 
-\subsection{Maintaining the Integrity of the Specifications}
+A Fig.~\ref{fig:oct-classes} apresenta B-scans ilustrativos das quatro classes. A CNV e o DME podem produzir fluido e deformação das camadas, porém possuem mecanismos e padrões distintos; as drusas aparecem como elevações localizadas sob as camadas externas da retina; e a amostra normal preserva a depressão foveal. A presença de fluido em mais de uma condição e as diferenças entre seus padrões tornam a classificação automática um problema não trivial.
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+\begin{figure*}[t]
+    \centering
+    \setlength{\tabcolsep}{2pt}
+    \begin{tabular}{cc}
+        \includegraphics[width=0.49\textwidth]{figures/CNV-1676918-1.jpeg} &
+        \includegraphics[width=0.49\textwidth]{figures/DME-1083927-1.jpeg} \\
+        \small (a) CNV & \small (b) DME \\[1mm]
+        \includegraphics[width=0.49\textwidth]{figures/DRUSEN-3424668-17.jpeg} &
+        \includegraphics[width=0.49\textwidth]{figures/NORMAL-1001772-12.jpeg} \\
+        \small (c) Drusas & \small (d) Normal
+    \end{tabular}
+    \caption{Exemplos ilustrativos das quatro classes: (a) neovascularização coroideana, (b) edema macular diabético, (c) drusas e (d) retina normal. Foram usadas as imagens de treinamento CNV-1676918-1, DME-1083927-1, DRUSEN-3424668-17 e NORMAL-1001772-12, sem recorte ou alteração de conteúdo. Fonte: versão 3 do conjunto de Kermany et al., disponibilizada sob licença CC BY 4.0~\cite{kermany_dataset}.}
+    \label{fig:oct-classes}
+\end{figure*}
 
-\section{Prepare Your Paper Before Styling}
-Before you begin to format your paper, first write and save the content as a 
-separate text file. Complete all content and organizational editing before 
-formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on 
-proofreading, spelling and grammar.
+\section{Motivação}
 
-Keep your text and graphic files separate until after the text has been 
-formatted and styled. Do not number text heads---{\LaTeX} will do that 
-for you.
+A deficiência visual possui impacto relevante no Brasil. A Pesquisa Nacional de Saúde de 2019 estimou que 3,4\% da população com dois anos ou mais tinha muita dificuldade ou não conseguia enxergar, totalizando 6,978 milhões de pessoas~\cite{ibge2021}. Esse indicador descreve a limitação visual autorreferida, mas não identifica suas causas e, portanto, não pode ser atribuído diretamente às condições estudadas neste trabalho. Evidência etiológica mais específica é fornecida pelo São Paulo Eye Study, realizado em uma região de renda baixa e média da cidade de São Paulo: foram examinados 3.678 participantes com 50 anos ou mais, dos quais 3.642 tiveram acuidade visual mensurável. Entre os 346 olhos com acuidade visual apresentada inferior a 20/200, doenças retinianas foram identificadas como causa principal em 35,3\%~\cite{salomao2008}. Trata-se, contudo, de uma amostra regional, não de uma estimativa nacional.
 
-\subsection{Abbreviations and Acronyms}\label{AA}
-Define abbreviations and acronyms the first time they are used in the text, 
-even after they have been defined in the abstract. Abbreviations such as 
-IEEE, SI, MKS, CGS, ac, dc, and rms do not have to be defined. Do not use 
-abbreviations in the title or heads unless they are unavoidable.
+O componente diabético também representa uma população de risco expressiva. Uma revisão sistemática com 72 estudos e 29.527 adultos com diabetes estimou prevalência de retinopatia diabética de 36,28\% no Brasil, com intervalo de confiança de 95\% entre 32,66\% e 39,97\%~\cite{chagas2023}. A heterogeneidade elevada ($I^2=98\%$) exige cautela, e retinopatia diabética não equivale especificamente a DME, que pode ou não estar presente. Para pacientes acima de 60 anos com DMRI neovascular, a incorporação de aflibercepte e ranibizumabe ao Sistema Único de Saúde em 2021 reforça a relevância de identificar e acompanhar alterações tratáveis em tempo adequado~\cite{conitec2021}.
 
-\subsection{Units}
-\begin{itemize}
-\item Use either SI (MKS) or CGS as primary units. (SI units are encouraged.) English units may be used as secondary units (in parentheses). An exception would be the use of English units as identifiers in trade, such as ``3.5-inch disk drive''.
-\item Avoid combining SI and CGS units, such as current in amperes and magnetic field in oersteds. This often leads to confusion because equations do not balance dimensionally. If you must use mixed units, clearly state the units for each quantity that you use in an equation.
-\item Do not mix complete spellings and abbreviations of units: ``Wb/m\textsuperscript{2}'' or ``webers per square meter'', not ``webers/m\textsuperscript{2}''. Spell out units when they appear in text: ``. . . a few henries'', not ``. . . a few H''.
-\item Use a zero before decimal points: ``0.25'', not ``.25''. Use ``cm\textsuperscript{3}'', not ``cc''.)
-\end{itemize}
+Como um exame pode conter diversos B-scans, a análise manual demanda tempo especializado. Sistemas automáticos podem apoiar a triagem e a priorização de exames para revisão especializada~\cite{kermany2018,defauw2018}. Essa função deve ser entendida como suporte à decisão: uma imagem isolada não contém histórico clínico, exame físico, informações sobre tratamento ou todas as aquisições do volume. Além disso, um modelo treinado nessa base multicêntrica internacional não está validado para uso clínico na população brasileira.
 
-\subsection{Equations}
-Number equations consecutively. To make your 
-equations more compact, you may use the solidus (~/~), the exp function, or 
-appropriate exponents. Italicize Roman symbols for quantities and variables, 
-but not Greek symbols. Use a long dash rather than a hyphen for a minus 
-sign. Punctuate equations with commas or periods when they are part of a 
-sentence, as in:
-\begin{equation}
-a+b=\gamma\label{eq}
-\end{equation}
+Nesse contexto, o objetivo do projeto é investigar se uma rede neural convolucional compacta, treinada do zero, consegue aprender representações úteis das quatro classes e superar uma referência clássica baseada em descritores de histogramas de gradientes orientados (HOG, do inglês \textit{histograms of oriented gradients}) e regressão logística. A comparação privilegia um protocolo reproduzível, com separação por paciente e relato conjunto de desempenho global e por classe. Foi utilizada a versão 3 do subconjunto OCT de Kermany et al.~\cite{kermany_dataset}, preservando-se o conjunto de teste oficial. A validação foi amostrada somente do conjunto de treino, em proporção de 15\%, por agrupamento dos identificadores de paciente extraídos de nomes no padrão Kermany, como \texttt{CNV-1016042-1.jpeg}. O manifesto final foi validado para garantir interseções vazias dos conjuntos de identificadores de paciente entre treino, validação e teste. O resultado pretendido é uma análise experimental de métodos de classificação, e não um dispositivo diagnóstico.
 
-Be sure that the 
-symbols in your equation have been defined before or immediately following 
-the equation. Use ``\eqref{eq}'', not ``Eq.~\eqref{eq}'' or ``equation \eqref{eq}'', except at 
-the beginning of a sentence: ``Equation \eqref{eq} is . . .''
+\section{Trabalhos Relacionados}
 
-\subsection{\LaTeX-Specific Advice}
+Srinivasan et al.~\cite{srinivasan2014} apresentaram um dos antecedentes mais próximos da abordagem clássica considerada neste projeto. O método extrai descritores HOG multiescala de cada B-scan e os fornece a classificadores de máquinas de vetores de suporte lineares; o rótulo do volume é determinado pela moda das previsões dos cortes. Em 45 sujeitos, divididos igualmente entre retina normal, DME e DMRI seca, o sistema identificou corretamente todos os volumes com DME e DMRI e 86,67\% dos volumes normais. O número de classes, a escala da base e a avaliação por volume diferem do presente problema, impedindo comparação direta com acurácia por B-scan.
 
-Please use ``soft'' (e.g., \verb|\eqref{Eq}|) cross references instead
-of ``hard'' references (e.g., \verb|(1)|). That will make it possible
-to combine sections, add equations, or change the order of figures or
-citations without having to go through the file line by line.
+Kermany et al.~\cite{kermany2018} estabeleceram o benchmark de quatro classes utilizado neste trabalho. Os autores adaptaram uma Inception V3 pré-treinada no ImageNet, congelaram as camadas convolucionais e treinaram uma nova camada \textit{softmax}. A acurácia multiclasse relatada foi 96,6\% em 1.000 imagens de 633 pacientes não presentes no treino. Já sensibilidade e especificidade de 97,8\% e 97,4\% foram calculadas para a decisão binária de encaminhamento urgente, não como médias das quatro classes; essas métricas não devem ser comparadas diretamente a \textit{recall} macro ou AUC multiclasse.
 
-Please don't use the \verb|{eqnarray}| equation environment. Use
-\verb|{align}| or \verb|{IEEEeqnarray}| instead. The \verb|{eqnarray}|
-environment leaves unsightly spaces around relation symbols.
+Trabalhos posteriores questionaram a necessidade de redes profundas pré-treinadas para esse domínio. Butola et al.~\cite{butola2020} propuseram a LightOCT, com duas camadas convolucionais e uma camada totalmente conectada, treinada do zero. Nas implementações comparativas dos próprios autores, avaliadas na partição de teste com 1.000 imagens, a LightOCT alcançou 94,5\% de acurácia, próxima de VGG-19 (93,3\%) e Inception V3 (95,8\%), mas abaixo de ResNet-101 (96,7\%). O artigo não descreve um conjunto de validação separado para essa base durante a exploração dos hiperparâmetros da LightOCT. Arefin et al.~\cite{arefin2021} também treinaram uma CNN sem transferência, formada por cinco camadas convolucionais e duas densas, e relataram 97,93\% em 968 imagens de teste, uma partição posteriormente associada à versão 2 do conjunto~\cite{tampu2022}.
 
-Please note that the \verb|{subequations}| environment in {\LaTeX}
-will increment the main equation counter even when there are no
-equation numbers displayed. If you forget that, you might write an
-article in which the equation numbers skip from (17) to (20), causing
-the copy editors to wonder if you've discovered a new method of
-counting.
+Esses resultados precisam ser interpretados junto à análise de Tampu et al.~\cite{tampu2022}. Nos experimentos conduzidos pelos autores, separar B-scans sem respeitar sujeito ou volume inflou a acurácia entre 5 e 30 pontos percentuais, pois cortes consecutivos compartilham estruturas e ruído. Na versão 2 de Kermany, 92\% das imagens de teste possuíam identificadores de sujeitos também presentes no treino; na versão 3, não foi encontrada sobreposição de identificadores. Assim, o valor de Arefin et al. e outros resultados obtidos na versão 2 não constituem referências equivalentes a uma avaliação sem sobreposição por paciente.
 
-{\BibTeX} does not work by magic. It doesn't get the bibliographic
-data from thin air but from .bib files. If you use {\BibTeX} to produce a
-bibliography you must send the .bib files. 
+Em uma direção mais próxima da aplicação clínica, De Fauw et al.~\cite{defauw2018} combinaram uma U-Net tridimensional, que converte o volume em mapas de tecido, com uma rede de diagnóstico e recomendação de encaminhamento. Foram usados 14.884 volumes de 7.621 pacientes, com teste em 997 pacientes. A coorte foi obtida de uma via clínica que abrangia mais de 50 condições retinianas. O sistema previa quatro níveis de encaminhamento e dez rótulos diagnósticos adicionais. Essa tarefa clínica é mais ampla que as quatro classes deste trabalho e seus resultados não são diretamente comparáveis. A Tabela~\ref{tab:related-work} resume as diferenças centrais entre os estudos comparáveis.
 
-{\LaTeX} can't read your mind. If you assign the same label to a
-subsubsection and a table, you might find that Table I has been cross
-referenced as Table IV-B3. 
-
-{\LaTeX} does not have precognitive abilities. If you put a
-\verb|\label| command before the command that updates the counter it's
-supposed to be using, the label will pick up the last counter to be
-cross referenced instead. In particular, a \verb|\label| command
-should not go before the caption of a figure or a table.
-
-Do not use \verb|\nonumber| inside the \verb|{array}| environment. It
-will not stop equation numbers inside \verb|{array}| (there won't be
-any anyway) and it might stop a wanted equation number in the
-surrounding equation.
-
-\subsection{Some Common Mistakes}\label{SCM}
-\begin{itemize}
-\item The word ``data'' is plural, not singular.
-\item The subscript for the permeability of vacuum $\mu_{0}$, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ``o''.
-\item In American English, commas, semicolons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
-\item A graph within a graph is an ``inset'', not an ``insert''. The word alternatively is preferred to the word ``alternately'' (unless you really mean something that alternates).
-\item Do not use the word ``essentially'' to mean ``approximately'' or ``effectively''.
-\item In your paper title, if the words ``that uses'' can accurately replace the word ``using'', capitalize the ``u''; if not, keep using lower-cased.
-\item Be aware of the different meanings of the homophones ``affect'' and ``effect'', ``complement'' and ``compliment'', ``discreet'' and ``discrete'', ``principal'' and ``principle''.
-\item Do not confuse ``imply'' and ``infer''.
-\item The prefix ``non'' is not a word; it should be joined to the word it modifies, usually without a hyphen.
-\item There is no period after the ``et'' in the Latin abbreviation ``et al.''.
-\item The abbreviation ``i.e.'' means ``that is'', and the abbreviation ``e.g.'' means ``for example''.
-\end{itemize}
-An excellent style manual for science writers is \cite{b7}.
-
-\subsection{Authors and Affiliations}
-\textbf{The class file is designed for, but not limited to, six authors.} A 
-minimum of one author is required for all conference articles. Author names 
-should be listed starting from left to right and then moving down to the 
-next line. This is the author sequence that will be used in future citations 
-and by indexing services. Names should not be listed in columns nor group by 
-affiliation. Please keep your affiliations as succinct as possible (for 
-example, do not differentiate among departments of the same organization).
-
-\subsection{Identify the Headings}
-Headings, or heads, are organizational devices that guide the reader through 
-your paper. There are two types: component heads and text heads.
-
-Component heads identify the different components of your paper and are not 
-topically subordinate to each other. Examples include Acknowledgments and 
-References and, for these, the correct style to use is ``Heading 5''. Use 
-``figure caption'' for your Figure captions, and ``table head'' for your 
-table title. Run-in heads, such as ``Abstract'', will require you to apply a 
-style (in this case, italic) in addition to the style provided by the drop 
-down menu to differentiate the head from the text.
-
-Text heads organize the topics on a relational, hierarchical basis. For 
-example, the paper title is the primary text head because all subsequent 
-material relates and elaborates on this one topic. If there are two or more 
-sub-topics, the next level head (uppercase Roman numerals) should be used 
-and, conversely, if there are not at least two sub-topics, then no subheads 
-should be introduced.
-
-\subsection{Figures and Tables}
-\paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
-bottom of columns. Avoid placing them in the middle of columns. Large 
-figures and tables may span across both columns. Figure captions should be 
-below the figures; table heads should appear above the tables. Insert 
-figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{fig}'', even at the beginning of a sentence.
-
-\begin{table}[htbp]
-\caption{Table Type Styles}
-\begin{center}
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Table}&\multicolumn{3}{|c|}{\textbf{Table Column Head}} \\
-\cline{2-4} 
-\textbf{Head} & \textbf{\textit{Table column subhead}}& \textbf{\textit{Subhead}}& \textbf{\textit{Subhead}} \\
-\hline
-copy& More table copy$^{\mathrm{a}}$& &  \\
-\hline
-\multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
+\begin{table*}[t]
+\caption{Síntese dos trabalhos mais diretamente relacionados. Resultados de protocolos, versões e unidades de avaliação diferentes não formam um ranking único.}
+\label{tab:related-work}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.14\textwidth}
+                >{\raggedright\arraybackslash}p{0.22\textwidth}
+                >{\raggedright\arraybackslash}p{0.27\textwidth}
+                >{\raggedright\arraybackslash}p{0.29\textwidth}}
+\toprule
+\textbf{Estudo} & \textbf{Abordagem} & \textbf{Dados e avaliação} & \textbf{Resultado e ressalva} \\
+\midrule
+Srinivasan et al.~\cite{srinivasan2014} & HOG multiescala e SVM & 45 sujeitos; normal, DME e DMRI seca; avaliação por volume & 100\% para DME/DMRI e 86,67\% para normal; tarefa menor e distinta \\
+Kermany et al.~\cite{kermany2018} & Inception V3/ImageNet; convoluções congeladas & 108.312 imagens de treino; avaliação separada por paciente com 1.000 B-scans & 96,6\% de acurácia; sensibilidade/especificidade publicadas referem-se à decisão urgente \\
+Butola et al.~\cite{butola2020} & LightOCT com duas convoluções, treinada do zero & Quatro classes; teste oficial com 1.000 B-scans & 94,5\%; desempenho próximo das redes pré-treinadas nas implementações dos autores \\
+Arefin et al.~\cite{arefin2021,tampu2022} & CNN com cinco convoluções e duas camadas densas, sem transferência & Versão 2; teste oficial com 968 B-scans & 97,9\%; versão posteriormente associada a sobreposição entre treino e teste \\
+Tampu et al.~\cite{tampu2022} & LightOCT sob diferentes estratégias de particionamento & Versões 2 e 3; divisão por imagem e por sujeito/volume & Inflação de 5--30 pontos percentuais; 92\% das imagens de teste compartilhavam ID de sujeito com o treino na versão 2; nenhum ID compartilhado foi detectado na versão 3 \\
+\bottomrule
 \end{tabular}
-\label{tab1}
-\end{center}
-\end{table}
+\end{table*}
 
-\begin{figure}[htbp]
-\centerline{\includegraphics{fig1.png}}
-\caption{Example of a figure caption.}
-\label{fig}
-\end{figure}
+Em conjunto, a literatura indica que arquiteturas compactas podem ser competitivas, mas não demonstra que transferência de aprendizado seja desnecessária em geral. Profundidade, número de parâmetros, versão da base, unidade de avaliação e estratégia de particionamento variam simultaneamente. Isso motiva a comparação controlada entre HOG e uma CNN compacta sob o mesmo manifesto com teste oficial preservado e separação validada por paciente, mantendo os experimentos exploratórios com transferência apenas como evidência secundária.
 
-Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
-rather than symbols or abbreviations when writing Figure axis labels to 
-avoid confusing the reader. As an example, write the quantity 
-``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
-units in the label, present them within parentheses. Do not label axes only 
-with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
-\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
-quantities and units. For example, write ``Temperature (K)'', not 
-``Temperature/K''.
+% TODO: inserir Metodologia, Resultados e Discussão, Conclusão e Agradecimentos.
 
-\section*{Acknowledgment}
-
-The preferred spelling of the word ``acknowledgment'' in America is without 
-an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
-G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
-acknowledgments in the unnumbered footnote on the first page.
-
-\section*{References}
-
-Please number citations consecutively within brackets \cite{b1}. The 
-sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
-number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
-the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
-
-Number footnotes separately in superscripts. Place the actual footnote at 
-the bottom of the column in which it was cited. Do not put footnotes in the 
-abstract or reference list. Use letters for table footnotes.
-
-Unless there are six authors or more give all authors' names; do not use 
-``et al.''. Papers that have not been published, even if they have been 
-submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers 
-that have been accepted for publication should be cited as ``in press'' \cite{b5}. 
-Capitalize only the first word in a paper title, except for proper nouns and 
-element symbols.
-
-For papers published in translation journals, please give the English 
-citation first, followed by the original foreign-language citation \cite{b6}.
-
-\begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\end{thebibliography}
-\vspace{12pt}
-\color{red}
-IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \end{document}

@@ -1,0 +1,26 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# LaTeX editor and conversion artifacts
+*.synctex
+*.latexmain
+*.xdv
+*.dvi
+*.ps
+*.eps
+*.bak
+*.swp
+*~
