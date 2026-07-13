@@ -63,8 +63,7 @@ O componente diabético também representa uma população de risco expressiva. 
 
 Como um exame pode conter diversos B-scans, a análise manual demanda tempo especializado. Sistemas automáticos podem apoiar a triagem e a priorização de exames para revisão especializada~\cite{kermany2018,defauw2018}. Essa função deve ser entendida como suporte à decisão: uma imagem isolada não contém histórico clínico, exame físico, informações sobre tratamento ou todas as aquisições do volume. Além disso, um modelo treinado nessa base multicêntrica internacional não está validado para uso clínico na população brasileira.
 
-% TODO (REVISÃO): a explicação sobre os dados e a separação por paciente foi duplicada na Seção de metodologia. Cabe refletir em qual ponto do texto ela deve permanecer.
-Nesse contexto, o objetivo do projeto é investigar se uma rede neural convolucional compacta, treinada do zero, consegue aprender representações úteis das quatro classes e superar uma referência clássica baseada em descritores de histogramas de gradientes orientados (HOG, do inglês \textit{histograms of oriented gradients}) e regressão logística. A comparação privilegia um protocolo reproduzível, com separação por paciente e relato conjunto de desempenho global e por classe. Foi utilizada a versão 3 do subconjunto OCT de Kermany et al.~\cite{kermany_dataset}, preservando-se o conjunto de teste oficial. A validação foi amostrada somente do conjunto de treino, em proporção de 15\%, por agrupamento dos identificadores de paciente extraídos de nomes no padrão Kermany, como \texttt{CNV-1016042-1.jpeg}. O manifesto final foi validado para garantir interseções vazias dos conjuntos de identificadores de paciente entre treino, validação e teste. O resultado pretendido é uma análise experimental de métodos de classificação, e não um dispositivo diagnóstico.
+Nesse contexto, o objetivo do projeto é investigar se uma rede neural convolucional compacta, treinada do zero, consegue aprender representações úteis das quatro classes e superar uma referência clássica baseada em descritores de histogramas de gradientes orientados (HOG, do inglês \textit{histograms of oriented gradients}) e regressão logística. A comparação privilegia um protocolo reproduzível e o relato conjunto de desempenho global e por classe. O resultado pretendido é uma análise experimental de métodos de classificação, e não um dispositivo diagnóstico.
 
 \section{Trabalhos Relacionados}
 
@@ -267,7 +266,9 @@ Esse desempenho foi obtido com cerca de 94 mil parâmetros, contra aproximadamen
 
 Reitera-se, por fim, que o escopo deste trabalho é a análise experimental de métodos de classificação. O sistema não constitui dispositivo diagnóstico nem foi validado para uso clínico, sobretudo na população brasileira, e uma eventual aplicação se restringiria ao suporte à decisão, como a triagem e a priorização de exames para revisão especializada.
 
-% TODO: inserir Agradecimentos.
+\section*{Agradecimentos}
+
+Os autores agradecem ao professor de Ciência da Computação Dr. André Georghton Cardoso Pacheco pelo apoio e pela orientação na disciplina Inteligência Computacional em Saúde.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
